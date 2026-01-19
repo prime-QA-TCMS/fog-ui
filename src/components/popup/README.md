@@ -23,14 +23,11 @@ The `popup` component provides a customizable Material-UI Dialog/Modal wrapper f
 
 ```typescript
 interface PopupProps {
-  open: boolean;                    // Controls modal visibility
-  onClose: () => void;              // Close callback
-  title?: string;                   // Modal title
-  children: ReactNode;              // Modal content
-  actions?: ReactNode;              // Footer actions (buttons)
-  maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';  // Max width
-  fullWidth?: boolean;              // Use full width
-  fullScreen?: boolean;             // Full screen on mobile
+  open: boolean;                    					// Controls modal visibility
+  onClose: () => void;              					// Close callback
+  title: string;                    					// Modal title (required)
+  component: React.ReactNode;        					// Modal content (required)
+  buttons?: { text: string; onClick: () => void }[];	// Optional footer action buttons
 }
 ```
 
@@ -43,7 +40,7 @@ interface PopupProps {
 ```typescript
 import { useState } from 'react';
 import { Popup } from 'fog-ui';
-import { Button, Typography } from '@mui/material';
+import { Button, Box, Typography } from '@mui/material';
 
 function MyComponent() {
   const [open, setOpen] = useState(false);
@@ -56,49 +53,70 @@ function MyComponent() {
         open={open}
         onClose={() => setOpen(false)}
         title="Modal Title"
-      >
-        <Typography>Modal content goes here</Typography>
-      </Popup>
+        component={
+          <Box sx={{ p: 2 }}>
+            <Typography>Modal content goes here</Typography>
+          </Box>
+        }
+      />
     </>
   );
 }
 ```
 
-### With Actions
+### With Action Buttons
 
 ```typescript
 <Popup
   open={open}
   onClose={() => setOpen(false)}
   title="Confirm Action"
-  actions={
-    <>
-      <Button onClick={() => setOpen(false)}>Cancel</Button>
-      <Button variant="contained" onClick={handleConfirm}>Confirm</Button>
-    </>
+  component={
+    <Box sx={{ p: 2 }}>
+      <Typography>Are you sure you want to proceed?</Typography>
+    </Box>
   }
->
-  <Typography>Are you sure you want to proceed?</Typography>
-</Popup>
+  buttons={[
+    { text: 'Cancel', onClick: () => setOpen(false) },
+    { text: 'Confirm', onClick: handleConfirm }
+  ]}
+/>
 ```
 
 ### Different Sizes
 
+The Popup uses `maxWidth="sm"` by default (fixed in component). Content fills available space within the dialog. Use Box/Stack with proper spacing for responsive layouts:
+
 ```typescript
-// Small modal
-<Popup open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-  <Typography>Small modal content</Typography>
-</Popup>
+// Standard small modal (default)
+<Popup 
+  open={open} 
+  onClose={handleClose}
+  title="Small Modal"
+  component={
+    <Box sx={{ p: 2 }}>
+      <Typography>Small modal content</Typography>
+    </Box>
+  }
+/>
 
-// Large modal
-<Popup open={open} onClose={handleClose} maxWidth="lg" fullWidth>
-  <Typography>Large modal content</Typography>
-</Popup>
-
-// Full screen (mobile)
-<Popup open={open} onClose={handleClose} fullScreen>
-  <Typography>Full screen modal</Typography>
-</Popup>
+// Customize content layout with Stack
+<Popup 
+  open={open} 
+  onClose={handleClose}
+  title="Form Modal"
+  component={
+    <Box sx={{ p: 2 }}>
+      <Stack spacing={2}>
+        <TextField label="Name" fullWidth />
+        <TextField label="Email" fullWidth />
+        <Typography variant="body2" color="textSecondary">
+          Additional form fields as needed
+        </Typography>
+      </Stack>
+    </Box>
+  }
+/>
 ```
 
 ---
@@ -108,39 +126,23 @@ function MyComponent() {
 ```typescript
 import { useState } from 'react';
 import { Popup } from 'fog-ui';
-import { Button, TextField, Box } from '@mui/material';
-import { useToast } from 'fog-ui';
+import { Button, TextField, Box, Stack, Typography } from '@mui/material';
 
 function CreateUserModal() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const toast = useToast();
   
   const handleSubmit = async () => {
     try {
       await createUser({ name, email });
-      toast.success('User created successfully');
       setOpen(false);
       setName('');
       setEmail('');
     } catch (error) {
-      toast.error('Failed to create user');
+      console.error('Failed to create user', error);
     }
   };
-  
-  const actions = (
-    <>
-      <Button onClick={() => setOpen(false)}>Cancel</Button>
-      <Button 
-        variant="contained" 
-        onClick={handleSubmit}
-        disabled={!name || !email}
-      >
-        Create User
-      </Button>
-    </>
-  );
   
   return (
     <>
@@ -152,28 +154,35 @@ function CreateUserModal() {
         open={open}
         onClose={() => setOpen(false)}
         title="Create New User"
-        maxWidth="sm"
-        fullWidth
-        actions={actions}
-      >
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <TextField
-            label="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            fullWidth
-            required
-          />
-          <TextField
-            label="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            fullWidth
-            required
-          />
-        </Box>
-      </Popup>
+        component={
+          <Box sx={{ p: 2 }}>
+            <Stack spacing={2}>
+              <TextField
+                label="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                fullWidth
+                required
+              />
+              <TextField
+                label="Email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                fullWidth
+                required
+              />
+            </Stack>
+          </Box>
+        }
+        buttons={[
+          { text: 'Cancel', onClick: () => setOpen(false) },
+          { 
+            text: 'Create User', 
+            onClick: handleSubmit 
+          }
+        ]}
+      />
     </>
   );
 }
@@ -183,10 +192,12 @@ function CreateUserModal() {
 
 ## Best Practices
 
-1. **Close Handlers** - Always provide onClose callback
-2. **Form Validation** - Validate before allowing submission
-3. **Loading States** - Show loading indicators during async operations
-4. **Keyboard Navigation** - Ensure Escape key closes modal
+1. **Wrap content in Box/Stack** - Use `<Box sx={{ p: 2 }}>` to add padding to component content  
+2. **Close handlers** - Always provide `onClose` callback  
+3. **Form validation** - Validate inputs before button onClick handlers  
+4. **Button array** - Pass `buttons` as array of `{ text, onClick }` objects  
+5. **Keyboard navigation** - Escape key and clicking outside automatically close modal  
+6. **Title required** - `title` prop is required and shown in DialogTitle
 
 ---
 
