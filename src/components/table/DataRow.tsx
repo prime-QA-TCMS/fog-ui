@@ -38,7 +38,7 @@ export function DataRow<T>({ item, columns, id, isOpen, onToggle, rowComponent, 
       )}
       {columns.map((col, index) => (
         <TableCell
-          key={String(col.key)}
+          key={`row-${id}-${index}-${String(col.key)}`}
           align={col.align || "left"}
           data-testid={`data-table-cell-${id}-${String(col.key)}`}
           role="cell"

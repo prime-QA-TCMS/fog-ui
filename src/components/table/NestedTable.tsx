@@ -42,9 +42,9 @@ export function NestedTable<T>({
             data-testid={`nested-table-row-${nItem._id || idx}`}
             role="row"
           >
-            {nestedConfig.nestedColumns.map((nCol) => (
+            {nestedConfig.nestedColumns.map((nCol, nIdx) => (
               <TableCell
-                key={String(nCol.key)}
+                key={`nested-${nItem._id || idx}-${nIdx}-${String(nCol.key)}`}
                 data-testid={`nested-table-cell-${nItem._id || idx}-${String(nCol.key)}`}
                 role="cell"
               >

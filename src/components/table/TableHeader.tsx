@@ -16,9 +16,9 @@ export function TableHeader<T>({
             aria-label="Expand column"
           />
         )}
-        {columns.map((col) => (
+        {columns.map((col, index) => (
           <TableCell
-            key={String(col.key)}
+            key={`header-${index}-${String(col.key)}`}
             align={col.align || "left"}
             data-testid={`data-table-header-${String(col.key)}`}
             role="columnheader"

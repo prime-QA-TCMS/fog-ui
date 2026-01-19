@@ -37,7 +37,7 @@ export default defineConfig({
 			},
 		},
 		sourcemap: true,
-		emptyOutDir: true,
+		emptyOutDir: false,
 	},
 	test: {
 		environment: 'jsdom',
