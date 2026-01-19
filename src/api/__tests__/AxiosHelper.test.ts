@@ -739,7 +739,7 @@ describe('AxiosHelper', () => {
 
 			(mockAxiosInstance.get as any).mockResolvedValue(mockResponse);
 
-			const result = await axiosHelper.get('/complex');
+			const result = await axiosHelper.get<typeof complexData>('/complex');
 
 			expect(result).toEqual(complexData);
 			expect(result.user.profile.details.nested.deep).toBe('value');
@@ -759,7 +759,7 @@ describe('AxiosHelper', () => {
 
 			(mockAxiosInstance.get as any).mockResolvedValue(mockResponse);
 
-			const result = await axiosHelper.get('/circular');
+			const result = await axiosHelper.get<typeof circularData>('/circular');
 
 			expect(result.prop).toBe('value');
 			expect(result.self).toBe(result);

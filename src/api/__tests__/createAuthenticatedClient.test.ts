@@ -270,7 +270,7 @@ describe('createAuthenticatedClient', () => {
 
 			const requestInterceptor = mockAxiosInstance.interceptors.request.use.mock.calls[0][0];
 
-			const config = {
+			const config: { headers: Record<string, string> } = {
 				headers: {
 					'Content-Type': 'application/json',
 					'X-Custom': 'value',
@@ -284,7 +284,7 @@ describe('createAuthenticatedClient', () => {
 		});
 
 		it('should call custom onRequest interceptor if provided', async () => {
-			const customOnRequest = vi.fn((config) => {
+			const customOnRequest = vi.fn((config: { headers: Record<string, string> }) => {
 				config.headers['X-Modified'] = 'true';
 				return config;
 			});
@@ -293,7 +293,7 @@ describe('createAuthenticatedClient', () => {
 
 			const requestInterceptor = mockAxiosInstance.interceptors.request.use.mock.calls[0][0];
 
-			const config = { headers: {} };
+			const config: { headers: Record<string, string> } = { headers: {} };
 			await requestInterceptor(config);
 
 			expect(customOnRequest).toHaveBeenCalled();
@@ -301,7 +301,7 @@ describe('createAuthenticatedClient', () => {
 		});
 
 		it('should handle async custom onRequest interceptor', async () => {
-			const customOnRequest = vi.fn(async (config) => {
+			const customOnRequest = vi.fn(async (config: { headers: Record<string, string> }) => {
 				await new Promise((resolve) => setTimeout(resolve, 10));
 				config.headers['X-Async'] = 'true';
 				return config;
@@ -311,7 +311,7 @@ describe('createAuthenticatedClient', () => {
 
 			const requestInterceptor = mockAxiosInstance.interceptors.request.use.mock.calls[0][0];
 
-			const config = { headers: {} };
+			const config: { headers: Record<string, string> } = { headers: {} };
 			const result = await requestInterceptor(config);
 
 			expect(result.headers['X-Async']).toBe('true');
@@ -323,7 +323,7 @@ describe('createAuthenticatedClient', () => {
 
 			const requestInterceptor = mockAxiosInstance.interceptors.request.use.mock.calls[0][0];
 
-			const config = {};
+			const config: { headers?: Record<string, string> } = {};
 			const result = await requestInterceptor(config);
 
 			// Should not throw and headers should remain undefined
@@ -337,7 +337,10 @@ describe('createAuthenticatedClient', () => {
 
 			const responseInterceptor = mockAxiosInstance.interceptors.response.use.mock.calls[0][0];
 
-			const response = { data: { success: true }, status: 200 };
+			const response: { data: { success: boolean; modified?: boolean }; status: number } = {
+				data: { success: true },
+				status: 200,
+			};
 			const result = await responseInterceptor(response);
 
 			expect(result).toEqual(response);
@@ -353,7 +356,9 @@ describe('createAuthenticatedClient', () => {
 
 			const responseInterceptor = mockAxiosInstance.interceptors.response.use.mock.calls[0][0];
 
-			const response = { data: { success: true } };
+			const response: { data: { success: boolean; modified?: boolean } } = {
+				data: { success: true },
+			};
 			await responseInterceptor(response);
 
 			expect(customOnResponse).toHaveBeenCalledWith(response);
@@ -950,7 +955,7 @@ describe('createAuthenticatedClient', () => {
 			const errorInterceptor = mockAxiosInstance.interceptors.response.use.mock.calls[0][1];
 
 			// Verify token is added to request
-			const config = { headers: {} };
+			const config: { headers: Record<string, string> } = { headers: {} };
 			await requestInterceptor(config);
 			expect(config.headers.Authorization).toBe('Bearer old-token');
 

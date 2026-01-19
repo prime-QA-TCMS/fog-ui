@@ -34,8 +34,8 @@ interface TestUser {
 }
 
 describe('GenericListView', () => {
-	const mockFetchData = vi.fn<[], Promise<TestUser[]>>();
-	const mockMapToListItem = vi.fn<[TestUser], ListItemData>();
+	const mockFetchData: () => Promise<TestUser[]> = vi.fn();
+	const mockMapToListItem: (user: TestUser) => ListItemData = vi.fn();
 
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -510,7 +510,7 @@ describe('GenericListView', () => {
 				refetch: vi.fn(),
 			});
 
-			const mapToAccordionItem = vi.fn<[TestUser], AccordionItem>(
+			const mapToAccordionItem: (user: TestUser) => AccordionItem = vi.fn(
 				(user: TestUser) => ({
 					id: user.id,
 					title: user.name,

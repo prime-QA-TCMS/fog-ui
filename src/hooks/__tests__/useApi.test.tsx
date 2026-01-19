@@ -126,10 +126,11 @@ describe('useApi', () => {
 		});
 
 		it('does not execute when apiFn becomes null', async () => {
-			const mockFn = vi.fn().mockResolvedValue('data');
+			const mockFn: () => Promise<string> = vi.fn().mockResolvedValue('data');
 
 			const { result, rerender } = renderHook(
-				({ fn }) => useApi(fn, [], false),
+				({ fn }: { fn: (() => Promise<string>) | null }) =>
+					useApi(fn, [], false),
 				{ initialProps: { fn: mockFn } }
 			);
 

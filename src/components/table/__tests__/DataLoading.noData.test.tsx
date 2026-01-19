@@ -1,4 +1,5 @@
 import React from 'react';
+import { describe, test, expect } from 'vitest';
 import { renderWithProviders, screen } from '../../../test/utils';
 import { DataLoading } from '../DataLoading';
 
