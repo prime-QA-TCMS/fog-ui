@@ -121,7 +121,7 @@ describe('DataTable - No Data Scenarios', () => {
 		);
 
 		const emptyCell = screen.getByText('No records found.').closest('td');
-		// colspan should be columns.length + 1 (for nested expand icon column)
-		expect(emptyCell).toHaveAttribute('colspan', '6');
+		// colspan should be columns.length (5) when no nested or actions
+		expect(emptyCell).toHaveAttribute('colspan', '5');
 	});
 });

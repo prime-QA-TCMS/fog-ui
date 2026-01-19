@@ -79,7 +79,7 @@ describe('DataLoading - No Data / Edge Cases', () => {
 		);
 
 		const cell = screen.getByRole('progressbar').closest('td');
-		// colspan should be columns.length + 1
-		expect(cell).toHaveAttribute('colspan', '5');
+		// colspan should be columns.length when no nested or actions
+		expect(cell).toHaveAttribute('colspan', '4');
 	});
 });

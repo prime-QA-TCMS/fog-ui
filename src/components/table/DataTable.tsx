@@ -70,7 +70,11 @@ export function DataTable<T extends { _id?: string | number }>({
         )}
         <Table aria-labelledby={title ? "table-title" : undefined}>
           <TableBody>
-            <DataLoading columns={columns} />
+            <DataLoading
+              columns={columns}
+              hasNested={!!nestedConfig}
+              hasActions={!!rowComponent}
+            />
           </TableBody>
         </Table>
       </TableContainer>
@@ -98,7 +102,12 @@ export function DataTable<T extends { _id?: string | number }>({
         )}
         <Table aria-labelledby={title ? "table-title" : undefined}>
           <TableBody>
-            <NoDataTableRow columns={columns} message={emptyMessage} />
+            <NoDataTableRow
+              columns={columns}
+              message={emptyMessage}
+              hasNested={!!nestedConfig}
+              hasActions={!!rowComponent}
+            />
           </TableBody>
         </Table>
       </TableContainer>

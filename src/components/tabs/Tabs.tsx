@@ -40,11 +40,7 @@ export const GenericTabs: React.FC<GenericTabsProps> = ({ tabsData }) => {
                         aria-labelledby={`tab-${index}`}
                         data-testid={`tabpanel-${index}`}
                     >
-                        {activeTab === index && (
-                            <Typography data-testid={`tab-content-${index}`}>
-                                {tab.content}
-                            </Typography>
-                        )}
+                        {activeTab === index && tab.content}
                     </div>
                 ))}
             </Box>

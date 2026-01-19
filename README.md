@@ -82,25 +82,33 @@ npm install @mui/material @emotion/react @emotion/styled
 If your application uses additional MUI packages (icons, date pickers, etc.), install them separately as needed.
 
 ## 2) Minimal integration (recommended)
-fog-ui provides a theming system via its Theme Context / Provider. Wrap your app once at the root.
+fog-ui ships a theme factory (`createFogTheme`) that produces an MUI theme. Wrap your app with MUI's `ThemeProvider` once at the root.
 
 ```tsx
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { ThemeContextProvider } from "fog-ui";
-
+import { ThemeProvider, CssBaseline } from "@mui/material";
+import { createFogTheme, ToastProvider, PageWrapper } from "fog-ui";
 import App from "./App";
+
+const theme = createFogTheme({
+  palette: { mode: "light" }, // switch to "dark" for dark mode
+});
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <ThemeContextProvider>
-      <App />
-    </ThemeContextProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <ToastProvider>
+        <PageWrapper menuItems={{}}>
+          <App />
+        </PageWrapper>
+      </ToastProvider>
+    </ThemeProvider>
   </React.StrictMode>
 );
-
 ```
-This establishes a consistent MUI theme for all fog-ui components used by the app.
+This mirrors the consumer app setup: one shared MUI theme, toast provider, and the layout wrapper.
 
 ## 3) Using components
 Once installed, import components directly from the package:
@@ -111,22 +119,26 @@ import { PermissionCard, DataTable, TrendAnalyticsChart } from "fog-ui";
 If a component requires routing (for example, template/navigation components), make sure your application is wrapped with a router.
 
 
-## 1) 4) Router integration (required for some components)
-Some fog-ui components rely on react-router-dom. If you use Template components like PageWrapper / Topbar or list components that render links, wrap the app with BrowserRouter:
+## 4) Router integration (required for template/nav components)
+Template components (PageWrapper, Topbar, ProtectedRoute) and link-rendering lists need `react-router-dom`. Wrap the app with a router (HashRouter in the consumer app):
 ```tsx
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-import { ThemeContextProvider } from "fog-ui";
+import { HashRouter } from "react-router-dom";
+import { ThemeProvider, CssBaseline } from "@mui/material";
+import { createFogTheme } from "fog-ui";
 import App from "./App";
+
+const theme = createFogTheme();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <ThemeContextProvider>
+    <HashRouter>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
         <App />
-      </ThemeContextProvider>
-    </BrowserRouter>
+      </ThemeProvider>
+    </HashRouter>
   </React.StrictMode>
 );
 
@@ -137,33 +149,24 @@ npm install react-router-dom
 ```
 
 ## 5) Theme customization
-fog-ui supports theme customization in two common ways:
+Use `createFogTheme` to control light/dark mode, brand colors, and typography (as shown in the consumer app `ThemeCustomizationDemo`).
 
-Option A: Use fog-ui’s ThemeContext API (runtime changes)
-Use this if you want fog-ui to manage theme mode and primary color switching via context (best for apps that want runtime toggles).
 ```tsx
-import React from "react";
-import { ThemeContext } from "fog-ui";
-import { Button } from "@mui/material";
-
-export function ThemeToggle() {
-  const { toggleTheme } = React.useContext(ThemeContext);
-  return <Button onClick={toggleTheme}>Toggle Theme</Button>;
-}
-
-```
-Option B: Provide your own MUI ThemeProvider (advanced)
-Use this if your app already owns the theme, and you want fog-ui to follow it.
-```tsx
-import React from "react";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import { createFogTheme } from "fog-ui";
 
 const theme = createFogTheme({
-  palette: { primary: { main: "#123456" } },
+  palette: {
+    mode: "dark",
+    primary: { main: "#1976D2" },
+    secondary: { main: "#9c27b0" },
+  },
+  typography: {
+    fontFamily: "Inter",
+  },
 });
 
-export default function Root({ children }: { children: React.ReactNode }) {
+export function Root({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -223,17 +226,19 @@ Notes:
 Components render but styles look wrong
 
 fog-ui relies on MUI/Emotion theming. Ensure:
-- you installed Emotion packages
-- the app is wrapped in a theme provider (ThemeContextProvider or your own ThemeProvider)
+- Emotion packages are installed
+- The app is wrapped in a single MUI ThemeProvider (or the theme from `createFogTheme`)
 
 Navigation components do not work
-Ensure you have react-router-dom installed and BrowserRouter configured.
+- Install `react-router-dom`
+- Wrap the app in a router (HashRouter/BrowserRouter)
 
 Bundle size looks too large
-In consumer apps, MUI/Emotion are expected to be installed once and shared. Ensure your dependency graph does not include multiple versions of:
- - react
-- @mui/material
-- @emotion/react
+- Ensure only one copy of react, @mui/material, @emotion/react/@emotion/styled is installed (dedupe in Vite if linking locally)
+
+AxiosProvider throws on missing services
+- Pass a `services` map: `{ api: { baseURL: '...', requiresAuth: false } }`
+- When using `useService`, always specify the service name: `useService('api')`
 
 
 ## 8) Quick verification checklist
@@ -294,16 +299,69 @@ Notes:
 
 
 
-## 9) Where to go next
-- Components: Cards
-- Components: Forms
-- Components: Tables
-- Components: Charts
-- Components: Template
-- Components: Theming System
-- FAQ
 ---
 
-### If you want, I can tailor this page to your exact exports
-If you tell me **which provider name you want to standardize on publicly** (e.g., `FogThemeProvider` vs `ThemeContextProvider`), I’ll align the wiki wording and examples so your docs look consistent and professional across all pages.
-::contentReference[oaicite:0]{index=0}
+# 📚 Feature Documentation
+
+Comprehensive developer guides for all fog-ui features and components:
+
+## Core Infrastructure
+
+- [**API Module**](src/api/README.md) - HTTP client, authentication, token management, multi-service support
+- [**Hooks Module**](src/hooks/README.md) - Custom hooks (useApi, useNavigationWithContext, useResolvedMenu)
+- [**Context Module**](src/context/README.md) - ThemeContext provider for theme management
+- [**Theme System**](src/theme/README.md) - MUI theme configuration and customization
+
+## Component Categories
+
+### Forms & Input
+- [**Forms Module**](src/components/forms/README.md) - GenericForm, PopUpForm, SearchForm with validation, 12+ field types, API integration
+
+### Data Display
+- [**Tables**](src/components/table/README.md) - DataTable with nested rows, custom rendering, loading states
+- [**Cards**](src/components/cards/README.md) - CardView, MetricCard, FilterFormCard, PermissionCard, UserGroupCard
+- [**Lists**](src/components/lists/README.md) - List, AccordionList, CircularProgressList, GenericListView
+- [**Charts**](src/components/charts/README.md) - GenericPieChart, TrendAnalyticsChart
+
+### Layout & Navigation
+- [**Template/Layout**](src/components/template/README.md) - PageWrapper, Topbar, ProtectedRoute
+- [**Menus**](src/components/menus/README.md) - Menu configuration with dynamic route parameters
+
+### UI Components
+- [**Tabs**](src/components/tabs/README.md) - Tabbed interface with icons and custom content
+- [**Toast/Notifications**](src/components/toast/README.md) - Toast system with 4 variants, 6 positions, auto-dismiss
+- [**Popup/Modal**](src/components/popup/README.md) - Modal/Dialog component for content overlays
+- [**ErrorBoundary**](src/components/errorBoundary/README.md) - Error handling with custom fallback UI
+
+### Utilities
+- [**Style Utilities**](src/style/muiComponentStyles/README.md) - Container styles, typography utilities, theme-based layouts
+
+---
+
+## Quick Navigation by Use Case
+
+**Building a Dashboard?**
+→ Start with [Tables](src/components/table/README.md), [Charts](src/components/charts/README.md), [Cards](src/components/cards/README.md)
+
+**Creating Forms?**
+→ Check [Forms Module](src/components/forms/README.md), [Popup](src/components/popup/README.md), [Toast](src/components/toast/README.md)
+
+**Setting Up Navigation?**
+→ Use [Template/Layout](src/components/template/README.md), [Menus](src/components/menus/README.md), [Hooks](src/hooks/README.md)
+
+**Styling Your App?**
+→ Reference [Theme System](src/theme/README.md), [Style Utilities](src/style/muiComponentStyles/README.md), [Context](src/context/README.md)
+
+**Handling Errors?**
+→ Implement [ErrorBoundary](src/components/errorBoundary/README.md)
+
+**Making API Calls?**
+→ Use [API Module](src/api/README.md), [Hooks](src/hooks/README.md)
+
+---
+
+## 9) Where to go next
+- [Full Feature Docs](#-feature-documentation) - Comprehensive guides for all components
+- [Implementation Guide](#implementation-guide-getting-started) - Setup and integration steps
+- [Common Pitfalls](#7-common-pitfalls) - Troubleshooting and best practices
+- FAQ
