@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Tabs, Tab, Box, Typography } from '@mui/material';
+import { Tabs, Tab, Box } from '@mui/material';
 import { GenericTabsProps } from './types';
 
 export const GenericTabs: React.FC<GenericTabsProps> = ({ tabsData }) => {

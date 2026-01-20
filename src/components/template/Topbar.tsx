@@ -1,19 +1,41 @@
 import React from 'react';
-import { AppBar, Avatar, Box, Button, Toolbar, Typography } from '@mui/material';
+import {
+    AppBar,
+    Box,
+    Button,
+    Toolbar,
+    Typography,
+    IconButton,
+    Menu,
+    MenuItem,
+} from '@mui/material';
 import { TopBarProps } from './types';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { AccountCircle } from '@mui/icons-material';
 
-export const Topbar: React.FC<TopBarProps> = ({ pageTitle }) => {
+export const Topbar: React.FC<TopBarProps> = ({ pageTitle, menu, userMenu }) => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
-    const handleAdminClick = () => {
-        navigate('/configuration');
+    const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.getItem('pageTitle');
-        navigate('/');
+    const handleUserMenuClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleUserMenuItemClick = (callback: () => void) => {
+        callback();
+        handleUserMenuClose();
+    };
+
+    const isActive = (path: string) => {
+        if (path === '/dashboard') {
+            return location.pathname === '/dashboard';
+        }
+        return location.pathname.startsWith(path);
     };
 
     return (
@@ -35,33 +57,104 @@ export const Topbar: React.FC<TopBarProps> = ({ pageTitle }) => {
                 >
                     {pageTitle}
                 </Typography>
+
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexGrow: 1 }}>
+                    {menu && menu.length > 0 && (
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                            {menu.map((item) => (
+                                <Button
+                                    key={item.path}
+                                    startIcon={item.icon}
+                                    onClick={() => navigate(item.path)}
+                                    sx={{
+                                        color: isActive(item.path) ? 'primary.main' : 'text.primary',
+                                        borderBottom: isActive(item.path)
+                                            ? '2px solid'
+                                            : '2px solid transparent',
+                                        borderRadius: 0,
+                                        '&:hover': {
+                                            backgroundColor: 'action.hover',
+                                        },
+                                    }}
+                                    data-testid={`topbar-menu-${item.path}`}
+                                >
+                                    {item.label}
+                                </Button>
+                            ))}
+                        </Box>
+                    )}
+                </Box>
+
                 <Box
                     sx={{ display: 'flex', alignItems: 'center', gap: 2 }}
                     data-testid="topbar-actions"
                     role="toolbar"
                     aria-label="User actions"
                 >
-                    <Button
-                        variant="contained"
-                        onClick={handleAdminClick}
-                        data-testid="topbar-admin-button"
-                        aria-label="Go to admin configuration"
-                    >
-                        Admin
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="error"
-                        onClick={handleLogout}
-                        data-testid="topbar-logout-button"
-                        aria-label="Log out of application"
-                    >
-                        Log Out
-                    </Button>
-                    <Avatar
-                        data-testid="topbar-avatar"
-                        aria-label="User avatar"
-                    />
+                    {userMenu && (
+                        <>
+                            <IconButton
+                                size="large"
+                                edge="end"
+                                aria-label="account"
+                                aria-controls="user-menu"
+                                aria-haspopup="true"
+                                onClick={handleUserMenuOpen}
+                                color="inherit"
+                                data-testid="topbar-user-menu-button"
+                            >
+                                <AccountCircle />
+                            </IconButton>
+                            <Menu
+                                id="user-menu"
+                                anchorEl={anchorEl}
+                                open={Boolean(anchorEl)}
+                                onClose={handleUserMenuClose}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'right',
+                                }}
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                data-testid="topbar-user-menu"
+                            >
+                                {userMenu.profilePath && (
+                                    <MenuItem
+                                        onClick={() =>
+                                            handleUserMenuItemClick(() =>
+                                                navigate(userMenu.profilePath!)
+                                            )
+                                        }
+                                        data-testid="topbar-user-menu-profile"
+                                    >
+                                        Profile
+                                    </MenuItem>
+                                )}
+                                {userMenu.accountPath && (
+                                    <MenuItem
+                                        onClick={() =>
+                                            handleUserMenuItemClick(() =>
+                                                navigate(userMenu.accountPath!)
+                                            )
+                                        }
+                                        data-testid="topbar-user-menu-account"
+                                    >
+                                        My Account
+                                    </MenuItem>
+                                )}
+                                <MenuItem
+                                    onClick={() =>
+                                        handleUserMenuItemClick(() => userMenu.onLogout())
+                                    }
+                                    data-testid="topbar-user-menu-logout"
+                                >
+                                    Logout
+                                </MenuItem>
+                            </Menu>
+                        </>
+                    )}
                 </Box>
             </Toolbar>
         </AppBar>

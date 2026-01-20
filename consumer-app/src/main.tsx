@@ -20,6 +20,7 @@ import {
 	ApiIntegrationsDemo,
 	SearchFormDemo,
 	TemplateComponentsDemo,
+	ProtectedRouteDemo,
 	ThemeCustomizationDemo,
 	StyleUtilitiesDemo,
 } from './pages'
@@ -46,6 +47,7 @@ const demoPages: MenuItem[] = [
 	{ label: 'Navigation', path: '/navigation', component: <NavigationDemo /> },
 	{ label: 'API Integration', path: '/api', component: <ApiIntegrationsDemo /> },
 	{ label: 'Template Components', path: '/template', component: <TemplateComponentsDemo /> },
+	{ label: 'Protected Route', path: '/protected-route', component: <ProtectedRouteDemo /> },
 	{ label: 'Theme Customization', path: '/theme', component: <ThemeCustomizationDemo /> },
 	{ label: 'Style Utilities', path: '/styles', component: <StyleUtilitiesDemo /> },
 ]

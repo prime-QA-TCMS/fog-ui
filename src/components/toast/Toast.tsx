@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, AlertTitle, IconButton, Button, Slide, type SlideProps } from '@mui/material';
+import { Alert, IconButton, Button, Slide, type SlideProps } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import type { Toast as ToastType } from './types';
 
@@ -9,13 +9,6 @@ export interface ToastProps {
 	/** Callback when toast is dismissed */
 	onClose: (id: string) => void;
 }
-
-/**
- * Slide transition for toast animations
- */
-const SlideTransition = (props: SlideProps) => {
-	return <Slide {...props} direction="left" />;
-};
 
 /**
  * Toast Component

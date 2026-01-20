@@ -2,18 +2,20 @@ import React, { useState, useEffect } from "react";
 import { Box, Toolbar, Typography, Drawer, List, ListItem, ListItemButton, ListItemText, useTheme, } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { Topbar } from "./Topbar";
-import { MenuItem } from "./types";
+import Breadcrumbs from "./Breadcrumbs";
+import { MenuItem, PageWrapperProps as PageWrapperPropsType } from "./types";
 import { pageContainer, DrawerContainer } from "../../style/muiComponentStyles/containerStyles";
-import { GenericForm } from "../forms/Form";
-import { FormField } from "../forms/types";
-import { useResolvedMenu } from "../../hooks/useResolvedMenu"; // ✅ NEW
+import { useResolvedMenu } from "../../hooks/useResolvedMenu";
 
-interface PageWrapperProps {
-  children: React.ReactNode;
-  menuItems: Record<string, MenuItem[]>;
-}
-
-export const PageWrapper: React.FC<PageWrapperProps> = ({ children, menuItems }) => {
+export const PageWrapper: React.FC<PageWrapperPropsType> = ({
+  children,
+  menuItems,
+  logo = "FOG-UI LOGO",
+  drawerFooterComponent,
+  topbarMenu,
+  topbarUserMenu,
+  breadcrumbsConfig,
+}) => {
   const theme = useTheme();
   const styles = pageContainer(theme);
   const drawerStyles = DrawerContainer();
@@ -43,16 +45,6 @@ export const PageWrapper: React.FC<PageWrapperProps> = ({ children, menuItems })
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
-  const selectProjectFormField: FormField[] = [
-    {
-      name: "project",
-      label: "Project",
-      type: "select",
-      required: true,
-      onChange: (value: string) => console.log(value),
-    },
-  ];
-
   return (
     <Box sx={styles.root} data-testid="page-wrapper">
       <Drawer
@@ -64,7 +56,9 @@ export const PageWrapper: React.FC<PageWrapperProps> = ({ children, menuItems })
       >
         <Toolbar data-testid="page-wrapper-toolbar">
           <a href="/dashboard" data-testid="page-wrapper-logo-link" aria-label="Go to dashboard">
-            <Typography variant="h6">PRIMEQA LOGO</Typography>
+            <Typography variant="h6">
+              {typeof logo === "string" ? logo : logo}
+            </Typography>
           </a>
         </Toolbar>
 
@@ -104,11 +98,11 @@ export const PageWrapper: React.FC<PageWrapperProps> = ({ children, menuItems })
             </Box>
           ))}
         </List>
-
-        <Box sx={{ flexGrow: 1 }} />
-        <Box data-testid="page-wrapper-project-selector">
-          <GenericForm fields={selectProjectFormField} />
-        </Box>
+        {drawerFooterComponent && (
+          <Box data-testid="page-wrapper-drawer-footer">
+            {drawerFooterComponent}
+          </Box>
+        )}
       </Drawer>
 
       <Box
@@ -118,7 +112,17 @@ export const PageWrapper: React.FC<PageWrapperProps> = ({ children, menuItems })
         role="main"
         aria-label="Main content"
       >
-        <Topbar pageTitle={pageTitle} />
+        <Topbar
+          pageTitle={pageTitle}
+          menu={topbarMenu ? topbarMenu : []}
+          userMenu={topbarUserMenu ? topbarUserMenu : undefined}
+          data-testid="page-wrapper-topbar"
+        />
+        {breadcrumbsConfig && (
+          <Box sx={{ p: 2 }} data-testid="page-wrapper-breadcrumbs-container">
+            <Breadcrumbs config={breadcrumbsConfig} />
+          </Box>
+        )}
         <Box sx={{ flexGrow: 1, p: 0, marginTop: "0px" }}>
           {children}
         </Box>

@@ -13,5 +13,6 @@ export { NavigationDemo } from './NavigationDemo';
 export { ApiIntegrationsDemo } from './ApiIntegrationsDemo';
 export { SearchFormDemo } from './SearchFormDemo';
 export { TemplateComponentsDemo } from './TemplateComponentsDemo';
+export { ProtectedRouteDemo } from './ProtectedRouteDemo';
 export { ThemeCustomizationDemo } from './ThemeCustomizationDemo';
 export { StyleUtilitiesDemo } from './StyleUtilitiesDemo';

@@ -28,7 +28,7 @@ export type { Toast as ToastType, ToastVariant, ToastPosition, ToastOptions, Toa
 export { PageWrapper } from './components/template/PageWrapper';
 export { Topbar } from './components/template/Topbar';
 export { ProtectedRoute } from './components/template/ProtectedRoute';
-export type { ProtectedRouteProps } from './components/template/ProtectedRoute';
+export type { MenuItem, UserMenuConfig, BreadcrumbsConfig, TopBarProps, PageWrapperProps, ProtectedRouteProps } from './components/template/types';
 
 export { GenericTabs as Tabs } from './components/tabs/Tabs';
 

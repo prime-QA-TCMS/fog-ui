@@ -77,57 +77,56 @@ export function PopupDemo() {
 								</Stack>
 							</Box>
 						}
-					>
 					/>
 
-						{/* Form Popup */}
-						<Popup
-							open={formOpen}
-							onClose={() => setFormOpen(false)}
-							title="Enter Details"
-							component={
-								<Box sx={{ p: 2 }}>
-									<Stack spacing={2}>
-										<Typography variant="body2" color="textSecondary">
-											Popups can contain forms and interactive content
-										</Typography>
-										<Box
-											component="form"
-											onSubmit={(e) => {
-												e.preventDefault();
-												setFormOpen(false);
-											}}
-										>
-											<Stack spacing={2}>
-												<input
-													type="text"
-													placeholder="Enter your name"
-													style={{
-														padding: '10px',
-														border: '1px solid #ccc',
-														borderRadius: '4px',
-														fontSize: '14px',
-													}}
-												/>
-												<input
-													type="email"
-													placeholder="Enter your email"
-													style={{
-														padding: '10px',
-														border: '1px solid #ccc',
-														borderRadius: '4px',
-														fontSize: '14px',
-													}}
-												/>
-												<Button type="submit" variant="contained" fullWidth>
-													Submit
-												</Button>
-											</Stack>
-										</Box>
-									</Stack>
-								</Box>
-							}
-						/>
+					{/* Form Popup */}
+					<Popup
+						open={formOpen}
+						onClose={() => setFormOpen(false)}
+						title="Enter Details"
+						component={
+							<Box sx={{ p: 2 }}>
+								<Stack spacing={2}>
+									<Typography variant="body2" color="textSecondary">
+										Popups can contain forms and interactive content
+									</Typography>
+									<Box
+										component="form"
+										onSubmit={(e) => {
+											e.preventDefault();
+											setFormOpen(false);
+										}}
+									>
+										<Stack spacing={2}>
+											<input
+												type="text"
+												placeholder="Enter your name"
+												style={{
+													padding: '10px',
+													border: '1px solid #ccc',
+													borderRadius: '4px',
+													fontSize: '14px',
+												}}
+											/>
+											<input
+												type="email"
+												placeholder="Enter your email"
+												style={{
+													padding: '10px',
+													border: '1px solid #ccc',
+													borderRadius: '4px',
+													fontSize: '14px',
+												}}
+											/>
+											<Button type="submit" variant="contained" fullWidth>
+												Submit
+											</Button>
+										</Stack>
+									</Box>
+								</Stack>
+							</Box>
+						}
+					/>
 				</Stack>
 			</Paper>
 		</Box>

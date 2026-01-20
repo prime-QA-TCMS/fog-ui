@@ -22,7 +22,7 @@ test('PageWrapper updates title on menu click and calls navigate', async () => {
 		</PageWrapper>
 	);
 
-	expect(screen.getByText('PRIMEQA LOGO')).toBeInTheDocument();
+	expect(screen.getByText('FOG-UI LOGO')).toBeInTheDocument();
 	const item = screen.getByText('Goto');
 	await userEvent.click(item);
 	expect(navigateMock).toHaveBeenCalledWith('/goto');
