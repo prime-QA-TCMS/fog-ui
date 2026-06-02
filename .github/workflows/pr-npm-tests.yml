@@ -1,18 +1,17 @@
 name: PR NPM Tests
-
 on:
   pull_request:
     branches:
       - main
-      - develop
-    paths:
-      - 'PrimeQAUI/**'
-      - 'user-service/**'
-      - 'project-service/**'
-      - 'testcase-service/**'
-      - 'configuration-service/**'
-      - 'results-service/**'
-      - '.github/workflows/pr-npm-tests.yml'
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -28,21 +27,7 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - service: PrimeQAUI
-            path: PrimeQAUI
-          - service: user-service
-            path: user-service
-          - service: project-service
-            path: project-service
-          - service: testcase-service
-            path: testcase-service
-          - service: configuration-service
-            path: configuration-service
-          - service: results-service
-            path: results-service
-
+      
     defaults:
       run:
         working-directory: ${{ matrix.path }}
